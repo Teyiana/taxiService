@@ -11,6 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TripService {
+
+    private static final double FOOD_CARGO_FACTOR = 0.1;
+    private static final double FURNITURE_CARGO_FACTOR = 0.2;
+    private static final double BUILDING_MATERIALS_CARGO_FACTOR = 0.3;
+    private static final double OTHER_CARGO_FACTOR = 0.15;
+    private static final double LOAD_WEIGHT_STEP_KG = 1000.0;
+
     private final DataBase dataBase;
 
     public TripService(DataBase dataBase) {
@@ -48,7 +55,7 @@ public class TripService {
 
     private Vehicle findAvailableDelivery(DeliveryClient deliveryClient) {
         List<Delivery> availableDeliveries = new ArrayList<>();
-        for (Vehicle vehicle : getDataBase().getDrivers()) {
+        for (Vehicle vehicle : getDataBase().getVehicle()) {
             if (!vehicle.isBusy() && vehicle instanceof Delivery delivery) {
                 availableDeliveries.add(delivery);
             }
@@ -89,7 +96,7 @@ public class TripService {
 
     private Vehicle findAvailableCargoTransport(CargoClient cargoClient) {
         List<CargoTransport> availableTransports = new ArrayList<>();
-        for (Vehicle vehicle : getDataBase().getDrivers()) {
+        for (Vehicle vehicle : getDataBase().getVehicle()) {
             if (!vehicle.isBusy() && vehicle instanceof CargoTransport cargoTransport) {
                 availableTransports.add(cargoTransport);
             }
@@ -126,12 +133,12 @@ public class TripService {
     private double calculatePaymentAmountForCargo(double distance, CargoType cargoType, double currentLoad) {
         double basePrice = getDataBase().getBasePrice();
         double cargoFactor = switch (cargoType) {
-            case FOOD -> 0.1;
-            case FURNITURE -> 0.2;
-            case BUILDING_MATERIALS -> 0.3;
-            case OTHER -> 0.15;
+            case FOOD -> FOOD_CARGO_FACTOR;
+            case FURNITURE -> FURNITURE_CARGO_FACTOR;
+            case BUILDING_MATERIALS -> BUILDING_MATERIALS_CARGO_FACTOR;
+            case OTHER -> OTHER_CARGO_FACTOR;
         };
-        double loadFactor = 1 + (currentLoad / 1000); // assuming currentLoad is in kg
+        double loadFactor = 1 + (currentLoad / LOAD_WEIGHT_STEP_KG); // assuming currentLoad is in kg
         return basePrice * distance * cargoFactor * loadFactor;
     }
 
@@ -173,7 +180,7 @@ public class TripService {
 
     private Taxi findAvailableTaxi(Passenger passenger) {
         List<Taxi> availableDrivers = new ArrayList<>();
-        for (Vehicle vehicle : getDataBase().getDrivers()) {
+        for (Vehicle vehicle : getDataBase().getVehicle()) {
             if (!vehicle.isBusy() && vehicle instanceof Taxi taxi) {
                 availableDrivers.add(taxi);
             }

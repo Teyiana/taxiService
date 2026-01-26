@@ -13,4 +13,9 @@ public class CourierDelivery extends Delivery {
         System.out.println("Delivering package " + packageId +
                 " by " + getName());
     }
+
+    @Override
+    public void updatePosition(double latitude, double longitude) {
+        super.updatePosition(latitude, longitude);
+    }
 }

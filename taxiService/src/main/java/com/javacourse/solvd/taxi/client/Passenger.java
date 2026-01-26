@@ -20,8 +20,8 @@ public class Passenger extends Client {
     @Override
     public void createOrder() {
         System.out.println("Passenger" + getName() + " created a taxi order from position: " +
-                currentPosition.getLatitude() + ", " +
-                currentPosition.getLongitude());
+                getCurrentPosition().getLatitude() + ", " +
+                getCurrentPosition().getLongitude());
     }
 
 }

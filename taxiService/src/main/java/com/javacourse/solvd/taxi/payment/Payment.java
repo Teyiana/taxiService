@@ -28,7 +28,7 @@ public class Payment {
 
     @Override
     public String toString() {
-        return "com.javacourse.solvd.taxi.payment.Payment{" +
+        return "Payment{" +
                 "amount=" + amount +
                 ", type=" + type +
                 ", status=" + status +

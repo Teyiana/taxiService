@@ -2,7 +2,7 @@ package com.javacourse.solvd.taxi.vehicle;
 
 import com.javacourse.solvd.taxi.Position;
 
-public abstract class Vehicle {
+public abstract class Vehicle implements GPSNavigable {
     private String name;
     private String phoneNumber;
 
@@ -36,6 +36,14 @@ public abstract class Vehicle {
     }
 
     public abstract void startTrip();
+
+
+    @Override
+    public void navigateTo(double latitude, double longitude) {
+        System.out.println("Navigating to coordinates: (" + latitude + ", " + longitude + ")");
+        currentPosition.setLatitude(latitude);
+        currentPosition.setLongitude(longitude);
+    }
 
     @Override
     public String toString() {

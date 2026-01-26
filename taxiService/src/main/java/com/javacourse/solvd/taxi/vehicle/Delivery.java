@@ -2,7 +2,7 @@ package com.javacourse.solvd.taxi.vehicle;
 
 import com.javacourse.solvd.taxi.Position;
 
-public abstract class Delivery extends Vehicle {
+public abstract class Delivery extends Vehicle implements Trackable {
     public Delivery(String name, String phoneNumber, Position currentPosition) {
         super(name, phoneNumber, currentPosition);
     }
@@ -17,4 +17,11 @@ public abstract class Delivery extends Vehicle {
         }
     }
     public abstract void deliverPackage(String packageId);
+
+    @Override
+    public void updatePosition(double latitude, double longitude) {
+        currentPosition.setLatitude(latitude);
+        currentPosition.setLongitude(longitude);
+        System.out.println("Updated position of " + getName() + " to: " + latitude + ", " + longitude);
+    }
 }

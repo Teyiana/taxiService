@@ -32,4 +32,26 @@ public class Position {
                 ", longitude=" + longitude +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+
+        Position position = (Position) other;
+
+        if (Double.compare(position.latitude, latitude) != 0) return false;
+        return Double.compare(position.longitude, longitude) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(latitude);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(longitude);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 }

@@ -3,9 +3,9 @@ package com.javacourse.solvd.taxi.client;
 import com.javacourse.solvd.taxi.Position;
 
 public abstract class Client {
-    private String name;
-    private String phoneNumber;
-    Position currentPosition;
+    private final String name;
+    private final String phoneNumber;
+    private Position currentPosition;
 
     public Client(String name, String phoneNumber, Position currentPosition) {
         this.name = name;

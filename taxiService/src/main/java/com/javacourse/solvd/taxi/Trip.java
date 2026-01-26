@@ -62,13 +62,15 @@ public class Trip {
 
     @Override
     public String toString() {
-        return "com.javacourse.solvd.taxi.Trip{" +
+        return "Trip{" +
                 "driver=" + vehicle +
                 ", passenger=" + client +
                 ", pickupLocation=" + pickupLocation +
                 ", dropOffLocation=" + dropOffLocation +
-                ", com.javacourse.solvd.taxi.payment=" + payment +
+                ", payment=" + payment +
                 ", tripStatus=" + tripStatus +
                 '}';
     }
+
+
 }

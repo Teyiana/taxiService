@@ -2,7 +2,7 @@ package com.javacourse.solvd.taxi.payment;
 
 import com.javacourse.solvd.taxi.DataBase;
 
-public abstract class PaymentService {
+public abstract class PaymentService implements Processable {
     private final DataBase dataBase;
 
     protected PaymentService(DataBase dataBase) {

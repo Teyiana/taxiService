@@ -13,4 +13,10 @@ public class CashPayment extends PaymentService {
         payment.setStatus(true);
         System.out.println("Cash payment processed: " + payment);
     }
+
+    @Override
+    public void processPayment(Payment payment) {
+        payment.setStatus(true);
+        System.out.println("Cash payment processed: " + payment);
+    }
 }
