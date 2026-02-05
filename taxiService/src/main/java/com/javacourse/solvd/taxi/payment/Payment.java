@@ -35,10 +35,6 @@ public class Payment {
                 '}';
     }
 
-    public String getPaymentType() {
-        return type.toString();
-    }
-
     public void setAmount(double paymentAmount) {
         this.amount = paymentAmount;
     }
