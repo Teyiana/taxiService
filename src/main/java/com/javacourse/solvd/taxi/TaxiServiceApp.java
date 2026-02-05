@@ -56,7 +56,7 @@ public class TaxiServiceApp {
         }
         return paymentType;
     }
-    
+
     private Position readPosition(Client client) {
         try{
             println("Please enter start position coordinates");
@@ -127,16 +127,18 @@ public class TaxiServiceApp {
             if (answer.equals("yes") || answer.equals("y")) {
                 tripService.startTrip(trip);
             }
-            println("Do you want payment complete for trip");
+            println("Please payment complete for trip");
             answer = scanner.nextLine();
             if (answer.equals("yes") || answer.equals("y")) {
                 paymentServices.get(paymentType).payForTrip(trip.getPayment());
                 trip.getPayment().setStatus(true);
                 println("Payment completed for trip: " + trip);
+                println("Your trip completed.");
+                tripService.completeTrip(trip);
+            } else if (answer.equals("no") || answer.equals("n")) {
+                trip.getPayment().setStatus(false);
+                println("Trip cancel.");
             }
-            println("Your trip completed.");
-            tripService.completeTrip(trip);
-
         } catch (Exception e) {
             println("Trip preparation failed. Reason: " + e.getMessage());
         }
@@ -183,13 +185,7 @@ public class TaxiServiceApp {
                 println("Enter phone number: ");
                 String phone = scanner.nextLine();
 
-                println("Enter current latitude: ");
-                double lat = Double.parseDouble(scanner.nextLine());
-
-                println("Enter current longitude: ");
-                double lon = Double.parseDouble(scanner.nextLine());
-
-                Position currentPosition = new Position(lat, lon);
+                Position currentPosition = new Position(0, 0);
 
                 switch (answer) {
                     case "p":
