@@ -2,7 +2,7 @@ package com.javacourse.solvd.taxi.payment;
 
 import com.javacourse.solvd.taxi.DataBase;
 
-public abstract class PaymentService implements Processable {
+public abstract class PaymentService<P extends Payment> implements Processable {
     private final DataBase dataBase;
 
     protected PaymentService(DataBase dataBase) {
@@ -10,13 +10,7 @@ public abstract class PaymentService implements Processable {
     }
 
     public abstract void payForTrip(Payment payment);
-
-
-    public Payment preparePayment(PaymentType paymentType) {
-        Payment payment = new Payment(paymentType);
-        dataBase.addPayment(payment);
-        return payment;
-    }
+    public abstract P preparePayment();
 
     public DataBase getDataBase() {
         return dataBase;

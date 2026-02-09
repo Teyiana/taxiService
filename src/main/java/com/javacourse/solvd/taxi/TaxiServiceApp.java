@@ -7,7 +7,8 @@ import com.javacourse.solvd.taxi.client.Passenger;
 import com.javacourse.solvd.taxi.payment.*;
 import com.javacourse.solvd.taxi.vehicle.*;
 
-import java.util.EnumMap;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -15,7 +16,7 @@ import java.util.Scanner;
 public class TaxiServiceApp {
 
     private DataBase db;
-    private final Map<PaymentType, PaymentService> paymentServices = new EnumMap<>(PaymentType.class);
+    private final Map<Class<? extends Payment>, PaymentService<?>> paymentServices = new HashMap<>();
     private TripService tripService;
     private Scanner scanner;
 
@@ -34,31 +35,31 @@ public class TaxiServiceApp {
         Client client = authorizeClient();
 
         Position endPosition = readPosition(client);
-        PaymentType paymentType = choosePaymentType();
-        tripFlow(client, endPosition, paymentType);
+        Payment payment = choosePayment();
+        tripFlow(client, endPosition, payment);
     }
 
-    private PaymentType choosePaymentType() {
-        PaymentType paymentType = null;
-        while (paymentType == null) {
+    private Payment choosePayment() {
+        Payment payment = null;
+        while (payment == null) {
             println("Please select payment type: (card - c/cash - ca/invoice - i)");
             String answer = scanner.nextLine();
             try {
-                paymentType = switch (answer) {
-                    case "c", "card" -> PaymentType.CARD;
-                    case "ca", "cash" -> PaymentType.CASH;
-                    case "i", "invoice" -> PaymentType.INVOICE;
-                    default -> paymentType;
+                payment = switch (answer) {
+                    case "c", "card" -> paymentServices.get(CardPayment.class).preparePayment();
+                    case "ca", "cash" -> paymentServices.get(CashPayment.class).preparePayment();
+                    case "i", "invoice" -> paymentServices.get(InvoicePayment.class).preparePayment();
+                    default -> null;
                 };
             } catch (Exception e) {
                 println("Invalid input. Please enter the correct data.");
             }
         }
-        return paymentType;
+        return payment;
     }
 
     private Position readPosition(Client client) {
-        try{
+        try {
             println("Please enter start position coordinates");
 
             println("Please enter latitude:");
@@ -72,13 +73,14 @@ public class TaxiServiceApp {
             client.getCurrentPosition().setLongitude(longitude);
 
             println("Please enter ending position coordinates");
+
             println("Please enter latitude:");
             latitude = scanner.nextDouble();
 
             println("Please enter longitude:");
             longitude = scanner.nextDouble();
             return new Position(latitude, longitude);
-        } catch (Exception e){
+        } catch (Exception e) {
             println("Invalid input. Please enter the correct coordinates.");
             return readPosition(client);
         }
@@ -105,9 +107,9 @@ public class TaxiServiceApp {
     }
 
 
-    private void tripFlow(Client client, Position endPosition, PaymentType paymentType) {
+    private void tripFlow(Client client, Position endPosition, Payment payment) {
         try {
-            Trip trip = tripService.prepareTrip(client, endPosition, paymentServices.get(paymentType).preparePayment(paymentType));
+            Trip trip = tripService.prepareTrip(client, endPosition, payment);
 
             if (trip == null) {
                 throw new IllegalStateException("No available vehicles for trip");
@@ -126,13 +128,13 @@ public class TaxiServiceApp {
             answer = scanner.nextLine();
             if (answer.equals("yes") || answer.equals("y")) {
                 tripService.startTrip(trip);
+            } else if (answer.equals("no") || answer.equals("n")) {
+                return;
             }
-            println("Please payment complete for trip");
+            println("Please payment complete for trip. (yes/no)");
             answer = scanner.nextLine();
             if (answer.equals("yes") || answer.equals("y")) {
-                paymentServices.get(paymentType).payForTrip(trip.getPayment());
-                trip.getPayment().setStatus(true);
-                println("Payment completed for trip: " + trip);
+                paymentServices.get(payment.getClass()).payForTrip(payment);
                 println("Your trip completed.");
                 tripService.completeTrip(trip);
             } else if (answer.equals("no") || answer.equals("n")) {
@@ -174,50 +176,49 @@ public class TaxiServiceApp {
     }
 
     private Client registerNewClient() {
-            try {
-                println("Please enter client type:");
-                println("passenger - p | delivery - d | cargo - c");
-                String answer = scanner.nextLine();
+        try {
+            println("Please enter client type:");
+            println("passenger - p | delivery - d | cargo - c");
+            String answer = scanner.nextLine();
 
-                println("Enter name: ");
-                String name = scanner.nextLine();
+            println("Enter name: ");
+            String name = scanner.nextLine();
 
-                println("Enter phone number: ");
-                String phone = scanner.nextLine();
+            println("Enter phone number: ");
+            String phone = scanner.nextLine();
 
-                Position currentPosition = new Position(0, 0);
+            Position currentPosition = new Position(0, 0);
 
-                switch (answer) {
-                    case "p":
-                        return new Passenger(name, phone, currentPosition);
+            switch (answer) {
+                case "p":
+                    return new Passenger(name, phone, currentPosition);
 
-                    case "d":
-                        println("Enter package weight: ");
-                        double weight = Double.parseDouble(scanner.nextLine());
-                        return new DeliveryClient(name, phone, currentPosition, weight);
+                case "d":
+                    println("Enter package weight: ");
+                    double weight = Double.parseDouble(scanner.nextLine());
+                    return new DeliveryClient(name, phone, currentPosition, weight);
 
-                    case "c":
-                        return new CargoClient(name, phone, currentPosition);
+                case "c":
+                    return new CargoClient(name, phone, currentPosition);
 
-                    default:
-                        println("Invalid client type. Try again.");
-                        return registerNewClient();
-                }
-
-            }catch (NumberFormatException e){
-                println("Invalid input. Please enter the correct data.");
-                return registerNewClient();
+                default:
+                    println("Invalid client type. Try again.");
+                    return registerNewClient();
             }
-    }
 
+        } catch (NumberFormatException e) {
+            println("Invalid input. Please enter the correct data.");
+            return registerNewClient();
+        }
+    }
 
 
     private void initData() {
         db = new DataBase(15.2);
 
-        paymentServices.put(PaymentType.CARD, new CardPayment(db));
-        paymentServices.put(PaymentType.CASH, new CashPayment(db));
-        paymentServices.put(PaymentType.INVOICE, new InvoicePayment(db));
+        paymentServices.put(CardPayment.class, new CardPaymentService(db));
+        paymentServices.put(CashPayment.class, new CashPaymentService(db));
+        paymentServices.put(InvoicePayment.class, new InvoicePaymentService(db));
 
         tripService = new TripService(db);
 
@@ -233,7 +234,7 @@ public class TaxiServiceApp {
         db.addClient(new DeliveryClient("DHL", "123-456-7890", new Position(37.7749, -122.4194), 5.0));
         db.addClient(new CargoClient("ACME Corp", "987-654-3210", new Position(25.7617, -80.1918)));
     }
-    
+
     public static void println(String msg) {
         System.out.println(msg);
     }
