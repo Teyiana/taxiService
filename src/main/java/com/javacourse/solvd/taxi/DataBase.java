@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataBase implements DataBaseIf {
-
-    private List<Vehicle> vehicles = new ArrayList<>();
+    private MyLinkedList<Vehicle> vehicles = new MyLinkedList<>();
     private List<Client> clients = new ArrayList<>();
     private List<Trip> trips = new ArrayList<>();
     private List<Payment> payments = new ArrayList<>();
@@ -21,7 +20,7 @@ public class DataBase implements DataBaseIf {
     }
 
     @Override
-    public List<Vehicle> getVehicle() {
+    public MyLinkedList<Vehicle> getVehicle() {
         return vehicles;
     }
 

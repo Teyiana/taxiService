@@ -9,7 +9,7 @@ import java.util.List;
 public interface DataBaseIf {
 
 
-    List<Vehicle> getVehicle();
+    MyLinkedList<Vehicle> getVehicle();
 
     List<Client> getClients();
 
