@@ -4,20 +4,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org">
   <modelVersion>4.0.0</modelVersion>
 
-  <!-- Project Metadata -->
+
   <groupId>com.javacourse.solvd</groupId>
   <artifactId>taxi-service</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <properties>
-    <!-- Use release 21 for Java 21 compatibility -->
-    <maven.compiler.release>21</maven.compiler.release>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.release>11</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <dependencies>
-    <!-- Add your dependencies here -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
@@ -28,11 +28,13 @@
 
   <build>
     <plugins>
-      <!-- Standard plugin for compiling Java 21 code -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.13.0</version>
+        <configuration>
+          <release>11</release>
+        </configuration>
       </plugin>
     </plugins>
   </build>

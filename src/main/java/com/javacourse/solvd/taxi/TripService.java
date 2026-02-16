@@ -25,13 +25,16 @@ public class TripService {
     }
 
     public Trip prepareTrip(Client client, Position dropOffLocation, Payment payment) {
-        if (client instanceof Passenger passenger) {
+        if (client instanceof Passenger) {
+            Passenger passenger = (Passenger) client;
             System.out.println("Preparing trip for passenger: " + passenger);
             return prepareTaxiTrip(passenger, dropOffLocation, payment);
-        } else if (client instanceof CargoClient cargoClient) {
+        } else if (client instanceof CargoClient) {
+            CargoClient cargoClient = (CargoClient) client;
             System.out.println("Preparing trip for truck: " + cargoClient);
             return prepareCargoTrip(cargoClient, dropOffLocation, payment);
-        } else if (client instanceof DeliveryClient deliveryClient) {
+        } else if (client instanceof DeliveryClient) {
+            DeliveryClient deliveryClient = (DeliveryClient) client;
             System.out.println("Preparing trip for delivery: " + deliveryClient);
             return prepareDeliveryTrip(deliveryClient, dropOffLocation, payment);
         }
@@ -40,7 +43,8 @@ public class TripService {
 
     private Trip prepareDeliveryTrip(DeliveryClient deliveryClient, Position dropOffLocation, Payment payment) {
         Vehicle vehicle = findAvailableDelivery(deliveryClient);
-        if (vehicle instanceof Delivery delivery) {
+        if (vehicle instanceof Delivery) {
+            Delivery delivery = (Delivery) vehicle;
             double distance = calculateDistance(deliveryClient.getCurrentPosition(), dropOffLocation);
             System.out.println("Calculated trip distance for delivery: " + distance);
             double paymentAmount = calculatePaymentForDelivery(distance, deliveryClient.getPackageWeight());
@@ -56,7 +60,8 @@ public class TripService {
     private Vehicle findAvailableDelivery(DeliveryClient deliveryClient) {
         List<Delivery> availableDeliveries = new ArrayList<>();
         for (Vehicle vehicle : getDataBase().getVehicle()) {
-            if (!vehicle.isBusy() && vehicle instanceof Delivery delivery) {
+            if (!vehicle.isBusy() && vehicle instanceof Delivery) {
+                Delivery delivery =  (Delivery) vehicle;
                 availableDeliveries.add(delivery);
             }
         }
@@ -80,7 +85,8 @@ public class TripService {
 
     private Trip prepareCargoTrip(CargoClient cargoClient, Position dropOffLocation, Payment payment) {
         Vehicle vehicle = findAvailableCargoTransport(cargoClient);
-        if (vehicle instanceof CargoTransport cargoTransport) {
+        if (vehicle instanceof CargoTransport) {
+            CargoTransport cargoTransport = (CargoTransport) vehicle;
             double distance = calculateDistance(cargoClient.getCurrentPosition(), dropOffLocation);
             System.out.println("Calculated trip distance for cargo: " + distance);
             double paymentAmount = calculatePaymentAmountForCargo(distance, cargoTransport.getCargoType(),
@@ -97,7 +103,8 @@ public class TripService {
     private Vehicle findAvailableCargoTransport(CargoClient cargoClient) {
         List<CargoTransport> availableTransports = new ArrayList<>();
         for (Vehicle vehicle : getDataBase().getVehicle()) {
-            if (!vehicle.isBusy() && vehicle instanceof CargoTransport cargoTransport) {
+            if (!vehicle.isBusy() && vehicle instanceof CargoTransport) {
+                CargoTransport cargoTransport = (CargoTransport) vehicle;
                 availableTransports.add(cargoTransport);
             }
         }
@@ -115,7 +122,8 @@ public class TripService {
 
     private Trip prepareTaxiTrip(Passenger passenger, Position dropOffLocation, Payment payment) {
         Vehicle vehicle = findAvailableTaxi(passenger);
-        if (vehicle instanceof Taxi taxi) {
+        if (vehicle instanceof Taxi) {
+            Taxi taxi = (Taxi) vehicle;
             double distance = calculateDistance(passenger.getCurrentPosition(), dropOffLocation);
             System.out.println("Calculated trip distance: " + distance);
             double paymentAmount = calculatePaymentAmount(distance, passenger.getRating(), taxi.getRating());
@@ -132,13 +140,25 @@ public class TripService {
 
     private double calculatePaymentAmountForCargo(double distance, CargoType cargoType, double currentLoad) {
         double basePrice = getDataBase().getBasePrice();
-        double cargoFactor = switch (cargoType) {
-            case FOOD -> FOOD_CARGO_FACTOR;
-            case FURNITURE -> FURNITURE_CARGO_FACTOR;
-            case BUILDING_MATERIALS -> BUILDING_MATERIALS_CARGO_FACTOR;
-            case OTHER -> OTHER_CARGO_FACTOR;
-        };
-        double loadFactor = 1 + (currentLoad / LOAD_WEIGHT_STEP_KG); // assuming currentLoad is in kg
+        double cargoFactor;
+
+            switch (cargoType) {
+                case FOOD:
+                    cargoFactor = FOOD_CARGO_FACTOR;
+                    break;
+                case FURNITURE:
+                    cargoFactor = FURNITURE_CARGO_FACTOR;
+                    break;
+                case BUILDING_MATERIALS:
+                    cargoFactor = BUILDING_MATERIALS_CARGO_FACTOR;
+                    break;
+                case OTHER:
+                    cargoFactor = OTHER_CARGO_FACTOR;
+                    break;
+                default:
+                    cargoFactor = 1.0;
+            }
+        double loadFactor = 1 + (currentLoad / LOAD_WEIGHT_STEP_KG);
         return basePrice * distance * cargoFactor * loadFactor;
     }
 
@@ -181,7 +201,8 @@ public class TripService {
     private Taxi findAvailableTaxi(Passenger passenger) {
         List<Taxi> availableDrivers = new ArrayList<>();
         for (Vehicle vehicle : getDataBase().getVehicle()) {
-            if (!vehicle.isBusy() && vehicle instanceof Taxi taxi) {
+            if (!vehicle.isBusy() && vehicle instanceof Taxi) {
+                Taxi taxi = (Taxi) vehicle;
                 availableDrivers.add(taxi);
             }
         }

@@ -42,15 +42,25 @@ public class TaxiServiceApp {
     private Payment choosePayment() {
         Payment payment = null;
         while (payment == null) {
-            println("Please select payment type: (card - c/cash - ca/invoice - i)");
+            println("Please select payment type: card(c), cash(ca), invoice(i)");
             String answer = scanner.nextLine();
             try {
-                payment = switch (answer) {
-                    case "c", "card" -> paymentServices.get(CardPayment.class).preparePayment();
-                    case "ca", "cash" -> paymentServices.get(CashPayment.class).preparePayment();
-                    case "i", "invoice" -> paymentServices.get(InvoicePayment.class).preparePayment();
-                    default -> null;
-                };
+                switch (answer) {
+                    case "card":
+                    case "c":
+                        payment = paymentServices.get(CardPayment.class).preparePayment();
+                        break;
+                    case "cash":
+                    case "ca":
+                        payment = paymentServices.get(CashPayment.class).preparePayment();
+                        break;
+                    case "invoice":
+                    case "in":
+                        payment = paymentServices.get(InvoicePayment.class).preparePayment();
+                        break;
+                    default:
+                        println("Invalid payment type. Try again.");
+                }
             } catch (Exception e) {
                 println("Invalid input. Please enter the correct data.");
             }
