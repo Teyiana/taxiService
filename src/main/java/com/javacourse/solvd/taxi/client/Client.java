@@ -2,9 +2,17 @@ package com.javacourse.solvd.taxi.client;
 
 import com.javacourse.solvd.taxi.Position;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public abstract class Client {
+
+    @Getter
     private final String name;
+    @Getter
     private final String phoneNumber;
+    @Getter
+    @Setter
     private Position currentPosition;
 
     public Client(String name, String phoneNumber, Position currentPosition) {
@@ -14,18 +22,6 @@ public abstract class Client {
     }
 
     public abstract void createOrder();
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public Position getCurrentPosition() {
-        return currentPosition;
-    }
 
     @Override
     public String toString() {

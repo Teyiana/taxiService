@@ -11,7 +11,7 @@ public class BusinessClass extends Taxi {
     @Override
     protected void navigateTo(Position destination) {
         System.out.println("Taxi " + getName() + " navigating to [" +
-                destination.getLatitude() + ", " +
-                destination.getLongitude() + "]");
+                destination.latitude() + ", " +
+                destination.longitude() + "]");
     }
 }

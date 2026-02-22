@@ -49,8 +49,7 @@ public class TripService {
             System.out.println("Calculated trip distance for delivery: " + distance);
             double paymentAmount = calculatePaymentForDelivery(distance, deliveryClient.getPackageWeight());
             System.out.println("Calculated payment amount for delivery: " + paymentAmount);
-            payment.setAmount(paymentAmount);
-            Trip trip = new Trip(delivery, deliveryClient, deliveryClient.getCurrentPosition(), dropOffLocation, payment);
+            Trip trip = new Trip(delivery, deliveryClient, deliveryClient.getCurrentPosition(), dropOffLocation, payment.setAmount(paymentAmount));
             return trip;
         }
         System.out.println("No available delivery vehicles for client: " + deliveryClient);
@@ -61,7 +60,7 @@ public class TripService {
         List<Delivery> availableDeliveries = new ArrayList<>();
         for (Vehicle vehicle : getDataBase().getVehicle()) {
             if (!vehicle.isBusy() && vehicle instanceof Delivery) {
-                Delivery delivery =  (Delivery) vehicle;
+                Delivery delivery = (Delivery) vehicle;
                 availableDeliveries.add(delivery);
             }
         }
@@ -142,22 +141,22 @@ public class TripService {
         double basePrice = getDataBase().getBasePrice();
         double cargoFactor;
 
-            switch (cargoType) {
-                case FOOD:
-                    cargoFactor = FOOD_CARGO_FACTOR;
-                    break;
-                case FURNITURE:
-                    cargoFactor = FURNITURE_CARGO_FACTOR;
-                    break;
-                case BUILDING_MATERIALS:
-                    cargoFactor = BUILDING_MATERIALS_CARGO_FACTOR;
-                    break;
-                case OTHER:
-                    cargoFactor = OTHER_CARGO_FACTOR;
-                    break;
-                default:
-                    cargoFactor = 1.0;
-            }
+        switch (cargoType) {
+            case FOOD:
+                cargoFactor = FOOD_CARGO_FACTOR;
+                break;
+            case FURNITURE:
+                cargoFactor = FURNITURE_CARGO_FACTOR;
+                break;
+            case BUILDING_MATERIALS:
+                cargoFactor = BUILDING_MATERIALS_CARGO_FACTOR;
+                break;
+            case OTHER:
+                cargoFactor = OTHER_CARGO_FACTOR;
+                break;
+            default:
+                cargoFactor = 1.0;
+        }
         double loadFactor = 1 + (currentLoad / LOAD_WEIGHT_STEP_KG);
         return basePrice * distance * cargoFactor * loadFactor;
     }
@@ -169,8 +168,8 @@ public class TripService {
     }
 
     private double calculateDistance(Position currentPosition, Position dropOffLocation) {
-        double latDiff = currentPosition.getLatitude() - dropOffLocation.getLatitude();
-        double lonDiff = currentPosition.getLongitude() - dropOffLocation.getLongitude();
+        double latDiff = currentPosition.latitude() - dropOffLocation.latitude();
+        double lonDiff = currentPosition.longitude() - dropOffLocation.longitude();
         return Math.sqrt(latDiff * latDiff + lonDiff * lonDiff);
     }
 
@@ -181,20 +180,18 @@ public class TripService {
     }
 
     public Trip startTrip(Trip trip) {
-        trip.getVehicle().getCurrentPosition().setLatitude(trip.getPickupLocation().getLatitude());
-        trip.getVehicle().getCurrentPosition().setLongitude(trip.getPickupLocation().getLongitude());
+        trip.getVehicle().setCurrentPosition(trip.getPickupLocation());
         trip.setTripStatus(TripStatus.IN_PROGRESS);
         return trip;
     }
 
     public Trip completeTrip(Trip trip) {
-        if (!trip.getPayment().getStatus()) {
+        if (trip.getPayment() == null) {
             throw new IllegalStateException("Payment not completed");
         }
         trip.setTripStatus(TripStatus.COMPLETED);
         trip.getVehicle().setBusy(false);
-        trip.getVehicle().getCurrentPosition().setLatitude(trip.getDropOffLocation().getLatitude());
-        trip.getVehicle().getCurrentPosition().setLongitude(trip.getDropOffLocation().getLongitude());
+        trip.getVehicle().setCurrentPosition(trip.getDropOffLocation());
         return trip;
     }
 
@@ -221,5 +218,4 @@ public class TripService {
     public DataBase getDataBase() {
         return dataBase;
     }
-
 }

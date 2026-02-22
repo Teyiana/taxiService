@@ -12,7 +12,7 @@ public class Trip {
 
     private Position pickupLocation;
     private Position dropOffLocation;
-    private Payment payment;
+    private  Payment payment;
 
     private TripStatus tripStatus = TripStatus.NEW;
 

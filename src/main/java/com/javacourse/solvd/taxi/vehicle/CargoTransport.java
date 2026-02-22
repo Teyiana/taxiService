@@ -47,5 +47,6 @@ public abstract class CargoTransport extends Vehicle {
         }
 
     }
+
     protected abstract void loadCargo(double weight);
 }

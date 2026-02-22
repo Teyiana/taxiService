@@ -16,12 +16,13 @@ public abstract class Delivery extends Vehicle implements Trackable {
             System.out.println(getName() + " is already on a delivery.");
         }
     }
+
     public abstract void deliverPackage(String packageId);
 
     @Override
     public void updatePosition(double latitude, double longitude) {
-        currentPosition.setLatitude(latitude);
-        currentPosition.setLongitude(longitude);
+        currentPosition.longitude();
+        currentPosition.latitude();
         System.out.println("Updated position of " + getName() + " to: " + latitude + ", " + longitude);
     }
 }

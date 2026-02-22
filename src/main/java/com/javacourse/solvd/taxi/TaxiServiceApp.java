@@ -6,6 +6,8 @@ import com.javacourse.solvd.taxi.client.DeliveryClient;
 import com.javacourse.solvd.taxi.client.Passenger;
 import com.javacourse.solvd.taxi.payment.*;
 import com.javacourse.solvd.taxi.vehicle.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 import java.util.HashMap;
@@ -15,8 +17,10 @@ import java.util.Scanner;
 
 public class TaxiServiceApp {
 
+    private static final Logger LOGGER = LogManager.getLogger(TaxiServiceApp.class);
+
     private DataBase db;
-    private final Map<Class<? extends Payment>, PaymentService<?>> paymentServices = new HashMap<>();
+    private PaymentService paymentService;
     private TripService tripService;
     private Scanner scanner;
 
@@ -29,7 +33,7 @@ public class TaxiServiceApp {
     private void run() {
         initData();
 
-        println("Welcome!\nYou are welcomed by Taxi Service.");
+        LOGGER.info("Welcome!\nYou are welcomed by Taxi Service.");
         scanner = new Scanner(System.in);
 
         Client client = authorizeClient();
@@ -43,21 +47,21 @@ public class TaxiServiceApp {
         Payment payment = null;
         while (payment == null) {
             println("Please select payment type: card(c), cash(ca), invoice(i)");
-            String answer = scanner.nextLine();
+            String answer = scanner.nextLine().trim();
             try {
                 switch (answer) {
-                    case "card":
-                    case "c":
-                        payment = paymentServices.get(CardPayment.class).preparePayment();
+                    case "card", "c": {
+                        payment = paymentService.preparePayment(PaymentType.CARD);
                         break;
-                    case "cash":
-                    case "ca":
-                        payment = paymentServices.get(CashPayment.class).preparePayment();
+                    }
+                    case "cash", "ca": {
+                        payment = paymentService.preparePayment(PaymentType.CASH);
                         break;
-                    case "invoice":
-                    case "in":
-                        payment = paymentServices.get(InvoicePayment.class).preparePayment();
+                    }
+                    case "invoice", "in": {
+                        payment = paymentService.preparePayment(PaymentType.INVOICE);
                         break;
+                    }
                     default:
                         println("Invalid payment type. Try again.");
                 }
@@ -79,8 +83,7 @@ public class TaxiServiceApp {
             double longitude = scanner.nextDouble();
             scanner.nextLine();
 
-            client.getCurrentPosition().setLatitude(latitude);
-            client.getCurrentPosition().setLongitude(longitude);
+            client.setCurrentPosition(new Position(latitude, longitude));
 
             println("Please enter ending position coordinates");
 
@@ -125,7 +128,7 @@ public class TaxiServiceApp {
                 throw new IllegalStateException("No available vehicles for trip");
             }
 
-            println("Your trip is prepared. Detailed information:\n\n" + trip.getVehicle() + trip.getPayment().getAmount());
+            println("Your trip is prepared. Detailed information:\n\n" + trip.getVehicle() + trip.getPayment().amount());
             println("Do you want to approve trip? (yes/no)");
             String answer = scanner.nextLine();
             if (answer.equals("yes") || answer.equals("y")) {
@@ -144,11 +147,13 @@ public class TaxiServiceApp {
             println("Please payment complete for trip. (yes/no)");
             answer = scanner.nextLine();
             if (answer.equals("yes") || answer.equals("y")) {
-                paymentServices.get(payment.getClass()).payForTrip(payment);
+                paymentService.payForTrip(trip.getPayment());
+//                paymentServices.get(payment.getClass()).payForTrip(payment);
                 println("Your trip completed.");
                 tripService.completeTrip(trip);
             } else if (answer.equals("no") || answer.equals("n")) {
-                trip.getPayment().setStatus(false);
+//                
+                trip.getPayment();
                 println("Trip cancel.");
             }
         } catch (Exception e) {
@@ -226,9 +231,7 @@ public class TaxiServiceApp {
     private void initData() {
         db = new DataBase(15.2);
 
-        paymentServices.put(CardPayment.class, new CardPaymentService(db));
-        paymentServices.put(CashPayment.class, new CashPaymentService(db));
-        paymentServices.put(InvoicePayment.class, new InvoicePaymentService(db));
+        paymentService = new PaymentService(db);
 
         tripService = new TripService(db);
 

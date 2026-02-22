@@ -27,6 +27,10 @@ public abstract class Vehicle implements GPSNavigable {
         return currentPosition;
     }
 
+    public void setCurrentPosition(Position currentPosition) {
+        this.currentPosition = currentPosition;
+    }
+
     public boolean isBusy() {
         return busy;
     }
@@ -41,8 +45,8 @@ public abstract class Vehicle implements GPSNavigable {
     @Override
     public void navigateTo(double latitude, double longitude) {
         System.out.println("Navigating to coordinates: (" + latitude + ", " + longitude + ")");
-        currentPosition.setLatitude(latitude);
-        currentPosition.setLongitude(longitude);
+        currentPosition.latitude();
+        currentPosition.longitude();
     }
 
     @Override
