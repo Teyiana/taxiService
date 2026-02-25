@@ -15,16 +15,16 @@ public interface DataBaseIf {
 
     List<Trip> getTrips();
 
-    public List<Payment> getPayment();
+    List<Payment> getPayment();
 
-    public List<Payment> getPayments();
+    List<Payment> getPayments();
 
-    public void addVehicle(Vehicle vehicle);
+    void addVehicle(Vehicle vehicle);
 
-    public void addClient(Client client);
+    void addClient(Client client);
 
-    public void addTrip(Trip trip);
+    void addTrip(Trip trip);
 
-    public void addPayment(Payment payment);
+    void addPayment(Payment payment);
 
 }

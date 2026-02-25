@@ -1,17 +1,26 @@
 package com.javacourse.solvd.taxi;
 
 import com.javacourse.solvd.taxi.client.Client;
-import com.javacourse.solvd.taxi.client.Passenger;
 import com.javacourse.solvd.taxi.payment.Payment;
-import com.javacourse.solvd.taxi.vehicle.Taxi;
 import com.javacourse.solvd.taxi.vehicle.Vehicle;
+import lombok.Getter;
+import lombok.Setter;
+
 
 public class Trip {
-    private final Vehicle vehicle;
-    private final Client client;
 
+    @Getter
+    private final Vehicle vehicle;
+    @Getter
+    private final Client client;
+    @Getter
+    @Setter
     private Position pickupLocation;
+    @Getter
+    @Setter
     private Position dropOffLocation;
+    @Getter
+    @Setter
     private  Payment payment;
 
     private TripStatus tripStatus = TripStatus.NEW;
@@ -24,29 +33,6 @@ public class Trip {
         this.payment = payment;
     }
 
-    public Vehicle getVehicle() {
-        return vehicle;
-    }
-
-    public Client getClient() {
-        return client;
-    }
-
-    public Position getPickupLocation() {
-        return pickupLocation;
-    }
-
-    public void setPickupLocation(Position pickupLocation) {
-        this.pickupLocation = pickupLocation;
-    }
-
-    public Position getDropOffLocation() {
-        return dropOffLocation;
-    }
-
-    public void setDropOffLocation(Position dropOffLocation) {
-        this.dropOffLocation = dropOffLocation;
-    }
 
     public void setTripStatus(TripStatus tripStatus) {
         this.tripStatus = tripStatus;
@@ -56,9 +42,7 @@ public class Trip {
         return tripStatus;
     }
 
-    public Payment getPayment() {
-        return payment;
-    }
+
 
     @Override
     public String toString() {

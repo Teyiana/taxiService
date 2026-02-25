@@ -6,11 +6,15 @@ import com.javacourse.solvd.taxi.client.Passenger;
 import com.javacourse.solvd.taxi.client.CargoClient;
 import com.javacourse.solvd.taxi.payment.Payment;
 import com.javacourse.solvd.taxi.vehicle.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TripService {
+
+    private static final Logger LOGGER = LogManager.getLogger(TripService.class);
 
     private static final double FOOD_CARGO_FACTOR = 0.1;
     private static final double FURNITURE_CARGO_FACTOR = 0.2;
@@ -27,15 +31,15 @@ public class TripService {
     public Trip prepareTrip(Client client, Position dropOffLocation, Payment payment) {
         if (client instanceof Passenger) {
             Passenger passenger = (Passenger) client;
-            System.out.println("Preparing trip for passenger: " + passenger);
+            LOGGER.info("Preparing trip for passenger: {}", passenger);
             return prepareTaxiTrip(passenger, dropOffLocation, payment);
         } else if (client instanceof CargoClient) {
             CargoClient cargoClient = (CargoClient) client;
-            System.out.println("Preparing trip for truck: " + cargoClient);
+            LOGGER.info("Preparing trip for truck: {}", cargoClient);
             return prepareCargoTrip(cargoClient, dropOffLocation, payment);
         } else if (client instanceof DeliveryClient) {
             DeliveryClient deliveryClient = (DeliveryClient) client;
-            System.out.println("Preparing trip for delivery: " + deliveryClient);
+            LOGGER.info("Preparing trip for delivery: {}",deliveryClient);
             return prepareDeliveryTrip(deliveryClient, dropOffLocation, payment);
         }
         throw new IllegalArgumentException("Unknown client type");
@@ -46,13 +50,13 @@ public class TripService {
         if (vehicle instanceof Delivery) {
             Delivery delivery = (Delivery) vehicle;
             double distance = calculateDistance(deliveryClient.getCurrentPosition(), dropOffLocation);
-            System.out.println("Calculated trip distance for delivery: " + distance);
+            LOGGER.info("Calculated trip distance for delivery: {}", distance);
             double paymentAmount = calculatePaymentForDelivery(distance, deliveryClient.getPackageWeight());
-            System.out.println("Calculated payment amount for delivery: " + paymentAmount);
+            LOGGER.info("Calculated payment amount for delivery: {}", paymentAmount);
             Trip trip = new Trip(delivery, deliveryClient, deliveryClient.getCurrentPosition(), dropOffLocation, payment.setAmount(paymentAmount));
             return trip;
         }
-        System.out.println("No available delivery vehicles for client: " + deliveryClient);
+        LOGGER.info("No available delivery vehicles for client: {}",deliveryClient);
         return null;
     }
 
@@ -87,15 +91,15 @@ public class TripService {
         if (vehicle instanceof CargoTransport) {
             CargoTransport cargoTransport = (CargoTransport) vehicle;
             double distance = calculateDistance(cargoClient.getCurrentPosition(), dropOffLocation);
-            System.out.println("Calculated trip distance for cargo: " + distance);
+            LOGGER.info("Calculated trip distance for cargo: {}",distance);
             double paymentAmount = calculatePaymentAmountForCargo(distance, cargoTransport.getCargoType(),
                     cargoTransport.getCurrentLoad());
-            System.out.println("Calculated payment amount for cargo: " + paymentAmount);
+            LOGGER.info("Calculated payment amount for cargo: {}", paymentAmount);
             payment.setAmount(paymentAmount);
             Trip trip = new Trip(cargoTransport, cargoClient, cargoClient.getCurrentPosition(), dropOffLocation, payment);
             return trip;
         }
-        System.out.println("No available cargo transports for client: " + cargoClient);
+        LOGGER.info("No available cargo transports for client: {}", cargoClient);
         return null;
     }
 
@@ -124,15 +128,15 @@ public class TripService {
         if (vehicle instanceof Taxi) {
             Taxi taxi = (Taxi) vehicle;
             double distance = calculateDistance(passenger.getCurrentPosition(), dropOffLocation);
-            System.out.println("Calculated trip distance: " + distance);
+            LOGGER.info("Calculated trip distance: {}", distance);
             double paymentAmount = calculatePaymentAmount(distance, passenger.getRating(), taxi.getRating());
-            System.out.println("Calculated payment amount: " + paymentAmount);
+            LOGGER.info("Calculated payment amount: {}", paymentAmount);
             payment.setAmount(paymentAmount);
             Trip trip = new Trip(taxi, passenger, passenger.getCurrentPosition(), dropOffLocation, payment);
             getDataBase().addTrip(trip);
             return trip;
         }
-        System.out.println("No available drivers for passenger: " + passenger);
+        LOGGER.info("No available drivers for passenger: {}", passenger);
         return null;
 
     }

@@ -46,7 +46,7 @@ public class TaxiServiceApp {
     private Payment choosePayment() {
         Payment payment = null;
         while (payment == null) {
-            println("Please select payment type: card(c), cash(ca), invoice(i)");
+            LOGGER.info("Please select payment type: card(c), cash(ca), invoice(in)");
             String answer = scanner.nextLine().trim();
             try {
                 switch (answer) {
@@ -63,10 +63,10 @@ public class TaxiServiceApp {
                         break;
                     }
                     default:
-                        println("Invalid payment type. Try again.");
+                        LOGGER.info("Invalid payment type. Try again.");
                 }
             } catch (Exception e) {
-                println("Invalid input. Please enter the correct data.");
+                LOGGER.error("Invalid input. Please enter the correct payment type.");
             }
         }
         return payment;
@@ -74,27 +74,27 @@ public class TaxiServiceApp {
 
     private Position readPosition(Client client) {
         try {
-            println("Please enter start position coordinates");
+            LOGGER.info("Please enter start position coordinates");
 
-            println("Please enter latitude:");
+            LOGGER.info("Please enter latitude:");
             double latitude = scanner.nextDouble();
 
-            println("Please enter longitude:");
+            LOGGER.info("Please enter longitude:");
             double longitude = scanner.nextDouble();
             scanner.nextLine();
 
             client.setCurrentPosition(new Position(latitude, longitude));
 
-            println("Please enter ending position coordinates");
+            LOGGER.info("Please enter ending position coordinates");
 
-            println("Please enter latitude:");
+            LOGGER.info("Please enter latitude:");
             latitude = scanner.nextDouble();
 
-            println("Please enter longitude:");
+            LOGGER.info("Please enter longitude:");
             longitude = scanner.nextDouble();
             return new Position(latitude, longitude);
         } catch (Exception e) {
-            println("Invalid input. Please enter the correct coordinates.");
+            LOGGER.error("Invalid input. Please enter the correct coordinates.");
             return readPosition(client);
         }
     }
@@ -103,7 +103,7 @@ public class TaxiServiceApp {
     private Client authorizeClient() {
         Client client = null;
         while (client == null) {
-            println("Do you want to register new client or login to existing one? (register - y/n)");
+            LOGGER.info("Do you want to register new client or login to existing one? (register - y/n)");
             String answer = scanner.nextLine();
 
             try {
@@ -113,7 +113,7 @@ public class TaxiServiceApp {
                     client = loginClient();
                 }
             } catch (Exception e) {
-                println("Invalid input. Please enter the correct data.");
+                LOGGER.error("Invalid input. Please enter the correct data.");
             }
         }
         return client;
@@ -128,59 +128,57 @@ public class TaxiServiceApp {
                 throw new IllegalStateException("No available vehicles for trip");
             }
 
-            println("Your trip is prepared. Detailed information:\n\n" + trip.getVehicle() + trip.getPayment().amount());
-            println("Do you want to approve trip? (yes/no)");
+            LOGGER.info("Your trip is prepared. Detailed information:\n\n {} {}" , trip.getVehicle(), trip.getPayment().amount());
+            LOGGER.info("Do you want to approve trip? (yes/no)");
             String answer = scanner.nextLine();
             if (answer.equals("yes") || answer.equals("y")) {
                 tripService.approveTrip(trip);
             } else if (answer.equals("no") || answer.equals("n")) {
-                println("Trip not approved.");
+                LOGGER.info("Trip not approved.");
                 return;
             }
-            println("Do you want to start trip? (yes/no)");
+            LOGGER.info("Do you want to start trip? (yes/no)");
             answer = scanner.nextLine();
             if (answer.equals("yes") || answer.equals("y")) {
                 tripService.startTrip(trip);
             } else if (answer.equals("no") || answer.equals("n")) {
                 return;
             }
-            println("Please payment complete for trip. (yes/no)");
+            LOGGER.info("Please payment complete for trip. (yes/no)");
             answer = scanner.nextLine();
             if (answer.equals("yes") || answer.equals("y")) {
                 paymentService.payForTrip(trip.getPayment());
-//                paymentServices.get(payment.getClass()).payForTrip(payment);
-                println("Your trip completed.");
+                LOGGER.info("Your trip completed.");
                 tripService.completeTrip(trip);
             } else if (answer.equals("no") || answer.equals("n")) {
-//                
-                trip.getPayment();
-                println("Trip cancel.");
+                trip.setPayment(null);
+                LOGGER.info("Trip cancel.");
             }
         } catch (Exception e) {
-            println("Trip preparation failed. Reason: " + e.getMessage());
+            LOGGER.error("Trip preparation failed.");
         }
 
     }
 
 
     private Client loginClient() {
-        println("Please enter phone number:");
+        LOGGER.info("Please enter phone number:");
         String phone = scanner.nextLine().trim();
         try {
             for (Client client : db.getClients()) {
                 if (client.getPhoneNumber().equals(phone)) {
-                    println("Client logged in: " + client);
+                    LOGGER.info("Client logged in: {}", client);
                     return client;
                 }
             }
 
         } catch (Exception e) {
-            println("Invalid input. Please enter the correct phone number.");
+            LOGGER.error("Error during login.", e);
         }
 
-        println("Client with phone number " + phone + " not found.");
-        println("Please try again.");
-        println("Do you want to register? (yes / no)");
+        LOGGER.info("Client with phone number {} not found.", phone);
+        LOGGER.info("Please try again.");
+        LOGGER.info("Do you want to register? (yes / no)");
         String answer = scanner.nextLine();
         if (answer.equals("yes")) {
             Client newClient = registerNewClient();
@@ -192,14 +190,14 @@ public class TaxiServiceApp {
 
     private Client registerNewClient() {
         try {
-            println("Please enter client type:");
-            println("passenger - p | delivery - d | cargo - c");
+            LOGGER.info("Please enter client type:");
+            LOGGER.info("passenger - p | delivery - d | cargo - c");
             String answer = scanner.nextLine();
 
-            println("Enter name: ");
+            LOGGER.info("Enter name: ");
             String name = scanner.nextLine();
 
-            println("Enter phone number: ");
+            LOGGER.info("Enter phone number: ");
             String phone = scanner.nextLine();
 
             Position currentPosition = new Position(0, 0);
@@ -209,7 +207,7 @@ public class TaxiServiceApp {
                     return new Passenger(name, phone, currentPosition);
 
                 case "d":
-                    println("Enter package weight: ");
+                    LOGGER.info("Enter package weight: ");
                     double weight = Double.parseDouble(scanner.nextLine());
                     return new DeliveryClient(name, phone, currentPosition, weight);
 
@@ -217,12 +215,12 @@ public class TaxiServiceApp {
                     return new CargoClient(name, phone, currentPosition);
 
                 default:
-                    println("Invalid client type. Try again.");
+                    LOGGER.info("Invalid client type. Try again.");
                     return registerNewClient();
             }
 
         } catch (NumberFormatException e) {
-            println("Invalid input. Please enter the correct data.");
+            LOGGER.error("Invalid input. Please enter the correct client type.");
             return registerNewClient();
         }
     }
@@ -248,7 +246,4 @@ public class TaxiServiceApp {
         db.addClient(new CargoClient("ACME Corp", "987-654-3210", new Position(25.7617, -80.1918)));
     }
 
-    public static void println(String msg) {
-        System.out.println(msg);
-    }
 }

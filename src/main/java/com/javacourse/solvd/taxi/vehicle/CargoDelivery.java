@@ -1,15 +1,20 @@
 package com.javacourse.solvd.taxi.vehicle;
 
 import com.javacourse.solvd.taxi.Position;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CargoDelivery extends Delivery {
+
+    private static final Logger LOGGER = LogManager.getLogger(CargoDelivery.class);
+
     public CargoDelivery(String name, String phoneNumber, Position currentPosition) {
         super(name, phoneNumber, currentPosition);
     }
 
     @Override
     public void deliverPackage(String packageId) {
-        System.out.println("Package " + packageId + " delivered by cargo transport.");
+        LOGGER.info("Package {} delivered by cargo transport.", packageId);
     }
 
     @Override

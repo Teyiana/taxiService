@@ -1,10 +1,16 @@
 package com.javacourse.solvd.taxi.vehicle;
 
 import com.javacourse.solvd.taxi.Position;
+import lombok.Data;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+@Data
 public abstract class CargoTransport extends Vehicle {
 
-    private double loadCapacity;
+    private static final Logger LOGGER = LogManager.getLogger(CargoTransport.class);
+
+    private final double loadCapacity;
     private double currentLoad;
     private Position currentPosition;
     private CargoType cargoType;
@@ -16,36 +22,14 @@ public abstract class CargoTransport extends Vehicle {
         this.cargoType = cargoType;
     }
 
-    public double getLoadCapacity() {
-        return loadCapacity;
-    }
-
-    public double getCurrentLoad() {
-        return currentLoad;
-    }
-
-    public Position getCurrentPosition() {
-        return currentPosition;
-    }
-
-    public CargoType getCargoType() {
-        return cargoType;
-    }
-
-    protected void setCurrentLoad(double currentLoad) {
-        this.currentLoad = currentLoad;
-    }
-
-
     @Override
     public void startTrip() {
         if (!isBusy()) {
             setBusy(true);
-            System.out.println("Cargo transport started with load capacity: " + loadCapacity);
+            LOGGER.info("Cargo transport started with load capacity: {}", loadCapacity);
         } else {
-            System.out.println("Cargo transport is already busy");
+            LOGGER.info("Cargo transport is already busy");
         }
-
     }
 
     protected abstract void loadCargo(double weight);

@@ -1,8 +1,13 @@
 package com.javacourse.solvd.taxi.vehicle;
 
 import com.javacourse.solvd.taxi.Position;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class Delivery extends Vehicle implements Trackable {
+
+    private static final Logger LOGGER = LogManager.getLogger(Delivery.class);
+
     public Delivery(String name, String phoneNumber, Position currentPosition) {
         super(name, phoneNumber, currentPosition);
     }
@@ -11,9 +16,9 @@ public abstract class Delivery extends Vehicle implements Trackable {
     public void startTrip() {
         if (!isBusy()) {
             setBusy(true);
-            System.out.println("Delivery started by " + getName());
+            LOGGER.info("Delivery started by {}", getName());
         } else {
-            System.out.println(getName() + " is already on a delivery.");
+            LOGGER.info("{} is already on a delivery.", getName());
         }
     }
 
@@ -23,6 +28,6 @@ public abstract class Delivery extends Vehicle implements Trackable {
     public void updatePosition(double latitude, double longitude) {
         currentPosition.longitude();
         currentPosition.latitude();
-        System.out.println("Updated position of " + getName() + " to: " + latitude + ", " + longitude);
+        LOGGER.info("Updated position of {} to {}, {}", getName(), latitude, longitude);
     }
 }

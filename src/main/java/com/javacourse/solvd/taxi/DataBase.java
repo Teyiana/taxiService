@@ -3,17 +3,25 @@ package com.javacourse.solvd.taxi;
 import com.javacourse.solvd.taxi.client.Client;
 import com.javacourse.solvd.taxi.payment.Payment;
 import com.javacourse.solvd.taxi.vehicle.Vehicle;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DataBase implements DataBaseIf {
+    private static final Logger LOGGER = LogManager.getLogger(DataBase.class);
+
     private MyLinkedList<Vehicle> vehicles = new MyLinkedList<>();
     private List<Client> clients = new ArrayList<>();
     private List<Trip> trips = new ArrayList<>();
     private List<Payment> payments = new ArrayList<>();
 
-    private double basePrice;
+    @Getter
+    @Setter
+    private  double basePrice;
 
     public DataBase(double basePrice) {
         this.basePrice = basePrice;
@@ -41,13 +49,13 @@ public class DataBase implements DataBaseIf {
 
     @Override
     public void addVehicle(Vehicle vehicle) {
-        System.out.println("DB: Adding driver: " + vehicle);
+        LOGGER.info("DB: Adding driver: {}", vehicle);
         vehicles.add(vehicle);
     }
 
     @Override
     public void addClient(Client client) {
-        System.out.println("DB: Adding client: " + client);
+        LOGGER.info("DB: Adding client: {}", client);
         clients.add(client);
     }
 
@@ -57,17 +65,9 @@ public class DataBase implements DataBaseIf {
     }
 
 
-    public double getBasePrice() {
-        return basePrice;
-    }
-
-    public void setBasePrice(double basePrice) {
-        this.basePrice = basePrice;
-    }
-
     @Override
     public void addPayment(Payment payment) {
-        System.out.println("DB: Adding payment: " + payment);
+        LOGGER.info("DB: Adding payment: {}", payment);
         payments.add(payment);
     }
 

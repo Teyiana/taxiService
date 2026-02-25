@@ -1,12 +1,19 @@
 package com.javacourse.solvd.taxi.client;
 
 import com.javacourse.solvd.taxi.Position;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@Data
+
 public class Passenger extends Client {
 
-    private double rating = 5.0;
+    private static final Logger LOGGER = LogManager.getLogger(Passenger.class);
+
+    @Getter
+    @Setter
+    private  double rating = 5.0;
 
     public Passenger(String name, String phoneNumber, Position currentPosition) {
         super(name, phoneNumber, currentPosition);
@@ -14,9 +21,8 @@ public class Passenger extends Client {
 
     @Override
     public void createOrder() {
-        System.out.println("Passenger" + getName() + " created a taxi order from position: " +
-                getCurrentPosition().longitude() + ", " +
-                getCurrentPosition().toString());
+        LOGGER.info("Passenger {} created a taxi order from position: {}, {}", getName(), getCurrentPosition().longitude(), getCurrentPosition().latitude());
+
     }
 
 }
