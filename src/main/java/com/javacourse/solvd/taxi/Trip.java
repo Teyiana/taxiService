@@ -21,7 +21,7 @@ public class Trip {
     private Position dropOffLocation;
     @Getter
     @Setter
-    private  Payment payment;
+    private Payment payment;
 
     private TripStatus tripStatus = TripStatus.NEW;
 
@@ -43,7 +43,6 @@ public class Trip {
     }
 
 
-
     @Override
     public String toString() {
         return "Trip{" +
@@ -55,6 +54,4 @@ public class Trip {
                 ", tripStatus=" + tripStatus +
                 '}';
     }
-
-
 }

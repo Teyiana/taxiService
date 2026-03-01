@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -165,11 +166,9 @@ public class TaxiServiceApp {
         LOGGER.info("Please enter phone number:");
         String phone = scanner.nextLine().trim();
         try {
-            for (Client client : db.getClients()) {
-                if (client.getPhoneNumber().equals(phone)) {
-                    LOGGER.info("Client logged in: {}", client);
-                    return client;
-                }
+            Client client =  db.getClients().stream().filter(c -> c.getPhoneNumber().equals(phone)).findFirst().orElse(null);
+            if (client != null) {
+                return client;
             }
 
         } catch (Exception e) {

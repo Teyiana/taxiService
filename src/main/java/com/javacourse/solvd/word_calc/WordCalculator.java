@@ -60,12 +60,12 @@ public class WordCalculator {
         if (scanner.hasNextLine()) {
             String line = scanner.nextLine();
             searchLine = line;
-            for (String word : line.split(",")) {
+            Arrays.stream(line.split(",")).forEach(word -> {
                 word = word.trim();
                 if (StringUtils.isNotBlank(word)) {
                     words.add(word);
                 }
-            }
+            });
         }
         return words;
 
@@ -78,12 +78,12 @@ public class WordCalculator {
             List<String> lines = FileUtils.readLines(new File(ARTICLE_FILE_PATH), StandardCharsets.UTF_8);
             lines.forEach(line -> {
                 if (StringUtils.isNotBlank(line)) {
-                    for (String s : wordsToSearch) {
+                    wordsToSearch.forEach(s -> {
                         int count = StringUtils.countMatches(line, s);
                         if (count > 0) {
                             result.put(s, result.get(s) + count);
                         }
-                    }
+                    });
                 }
             });
         } catch (Exception e) {

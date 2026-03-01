@@ -8,7 +8,6 @@ import com.javacourse.solvd.taxi.payment.Payment;
 import com.javacourse.solvd.taxi.vehicle.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 
